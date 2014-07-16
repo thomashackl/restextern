@@ -1,12 +1,12 @@
 <?php
 
 /**
- * InstiuteMap - TYPO3 routes for institute related stuff
+ * InstiuteHierarchyMap - TYPO3 routes for institute hierarchy related stuff
  *
  * @author Thomas Hackl <thomas.hackl@uni-passau.de>
  */
 
-class InstituteMap extends RESTAPI\RouteMap {
+class InstituteHierarchyMap extends RESTAPI\RouteMap {
 
     /**
      * Returns the institute hierarchy.
