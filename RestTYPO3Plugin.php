@@ -14,7 +14,7 @@
  * @license http://www.gnu.org/licenses/gpl-2.0.html GPL version 2
  * @version 1.0
  */
-class RestIDMPassauPlugin extends StudIPPlugin implements RESTAPIPlugin {
+class RestTYPO3Plugin extends StudIPPlugin implements RESTAPIPlugin {
 
     public function getRouteMaps() {
 
