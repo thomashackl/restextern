@@ -1,0 +1,5 @@
+pluginname=REST Schnittstelle TYPO3
+pluginclassname=RestTYPO3Plugin
+origin=intelec
+version=1.0
+studipMinVersion=3.0
