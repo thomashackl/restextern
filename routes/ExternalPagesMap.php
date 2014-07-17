@@ -57,7 +57,7 @@ class ExternalPagesMap extends RESTAPI\RouteMap {
                 case 10:
                     $types['download'] = dgettext('resttypo3', 'Downloads');
                     break;
-            n}
+            }
         }
         return $types;
     }
