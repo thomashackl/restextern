@@ -56,10 +56,10 @@ class InstituteHierarchyMap extends RESTAPI\RouteMap {
     private function buildRangeTreeLevel($parent_id, &$tree) {
         $data = array();
         foreach ($tree->getKids($parent_id) as $kid) {
-            $i = Institute::find($kid);
+            $data = $tree->tree_data[$kid];
             $data[] = array(
-                'id' => $i->id,
-                'name' => $i->name
+                'id' => $data['studip_object_id'] ?: '',
+                'name' => $data['name']
             );
             $data['children'] = self::buildRangeTreeLevel($kid, $tree);
         }
