@@ -2,8 +2,7 @@
 
 namespace RESTAPI\Routes;
 
-use \Institute;
-use \TreeAbstract;
+use \Institute, \TreeAbstract;
 
 /**
  * InstiuteHierarchyMap - TYPO3 routes for institute hierarchy related stuff

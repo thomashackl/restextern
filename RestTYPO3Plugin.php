@@ -30,7 +30,7 @@ class RestTYPO3Plugin extends StudIPPlugin implements RESTAPIPlugin {
         // Load all routes
         foreach (glob(__DIR__ . '/routes/*') as $filename) {
             require_once $filename;
-            $classname = basename($filename, '.php');
+            $classname = '\RESTAPI\Routes\\'.basename($filename, '.php');
             $routes[] = new $classname;
         }
 
