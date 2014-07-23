@@ -1,12 +1,17 @@
 <?php
 
+namespace RESTAPI\Routes;
+
+use \Institute;
+use \TreeAbstract;
+
 /**
  * InstiuteHierarchyMap - TYPO3 routes for institute hierarchy related stuff
  *
  * @author Thomas Hackl <thomas.hackl@uni-passau.de>
  */
 
-class InstituteHierarchyMap extends RESTAPI\RouteMap {
+class InstituteHierarchy extends \RESTAPI\RouteMap {
 
     /**
      * Returns the institute hierarchy.

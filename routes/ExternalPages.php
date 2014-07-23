@@ -1,5 +1,9 @@
 <?php
 
+namespace RESTAPI\Routes;
+
+use \DBManager;
+
 /**
  * ExternalPagesMap - TYPO3 routes for external pages and configurations
  * related stuff
@@ -12,7 +16,7 @@ class ExternalPagesMap extends RESTAPI\RouteMap {
     /**
      * Returns all configured external page types.
      *
-     * @get /typo3/externalpagetypes(/:institute_id)
+     * @get /typo3/externalpagetypes
      * @param String $institute_id an (optional) institute to narrow the search
      *                             focus to
      */
@@ -25,7 +29,7 @@ class ExternalPagesMap extends RESTAPI\RouteMap {
             $parameters[] = $institute_id;
         }
         $query .= "ORDER BY `config_type`";
-        return DBManager::get()->fetchAll($query, $parameters);
+        return DBManager::get()->fetchFirst($query, $parameters);
     }
 
     /**
