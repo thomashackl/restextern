@@ -40,14 +40,14 @@ class ExternalPages extends \RESTAPI\RouteMap {
      */
     public function getExternalPageConfigurations($institute_id) {
         $configs = array();
-        $data = DBManager::get()->fetchAll("SELECT `config_id`, `name`, `type`
+        $data = DBManager::get()->fetchAll("SELECT `config_id`, `name`, `config_type`
             FROM `extern_config` WHERE `range_id`=?
             ORDER BY `type`, `name`", array($institute_id));
         foreach ($data as $entry) {
             $configs[] = array(
                 'id' => $entry['config_id'],
                 'name' => $entry['name'],
-                'type' => $GLOBALS['EXTERN_MODULE_TYPES'][$entry['type']]['module']
+                'type' => $GLOBALS['EXTERN_MODULE_TYPES'][$entry['config_type']]['module']
             );
         }
         return $configs;
