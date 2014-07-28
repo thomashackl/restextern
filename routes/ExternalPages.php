@@ -38,8 +38,8 @@ class ExternalPages extends \RESTAPI\RouteMap {
      * Returns all configurations for external pages that belong to the given
      * institute.
      *
-     * @get /typo3/externconfigs/:institute_id
      * @get /typo3/externconfigs/:institute_id/:types
+     * @get /typo3/externconfigs/:institute_id
      */
     public function getExternalPageConfigurations($institute_id, $types='') {
         $configs = array();
