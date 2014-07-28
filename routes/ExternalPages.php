@@ -1,15 +1,17 @@
 <?php
 
-namespace RESTAPI\Routes;
-
-use \DBManager, \Request;
-
 /**
  * ExternalPagesMap - TYPO3 routes for external pages and configurations
  * related stuff
  *
  * @author Thomas Hackl <thomas.hackl@uni-passau.de>
  */
+
+namespace RESTAPI\Routes;
+
+use \DBManager, \Request;
+
+require_once($GLOBALS['RELATIVE_PATH_EXTERN'].'/extern_config.inc.php');
 
 class ExternalPages extends \RESTAPI\RouteMap {
 
@@ -36,13 +38,20 @@ class ExternalPages extends \RESTAPI\RouteMap {
      * Returns all configurations for external pages that belong to the given
      * institute.
      *
-     * @get /typo3/externconfig/:institute_id
+     * @get /typo3/externconfigs/:institute_id
+     * @get /typo3/externconfigs/:institute_id/:types
      */
-    public function getExternalPageConfigurations($institute_id) {
+    public function getExternalPageConfigurations($institute_id, $types='') {
         $configs = array();
-        $data = DBManager::get()->fetchAll("SELECT `config_id`, `name`, `config_type`
-            FROM `extern_config` WHERE `range_id`=?
-            ORDER BY `config_type`, `name`", array($institute_id));
+        $query = "SELECT `config_id`, `name`, `config_type`
+            FROM `extern_config` WHERE `range_id`=?";
+        $parameters = array($institute_id);
+        if ($types) {
+            $query .= " AND `config_type` IN (?)";
+            $parameters[] = array(explode(',', $types));
+        }
+        $query .= "ORDER BY `config_type`, `name`";
+        $data = DBManager::get()->fetchAll($query, $parameters);
         foreach ($data as $entry) {
             $configs[] = array(
                 'id' => $entry['config_id'],
