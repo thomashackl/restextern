@@ -41,4 +41,38 @@ class CourseData extends \RESTAPI\RouteMap {
     }
 
 
+    /**
+     * Returns the sem tree hierarchy.
+     *
+     * @get /typo3/semtree
+     */
+    public function getSemTree() {
+        $tree = TreeAbstract::getInstance('StudipSemTree', array('visible_only' => 1));
+        return self::buildTreeLevel('root', $tree);
+    }
+
+    /**
+     * Recursively builds the tree structure of the range hierarchy.
+     *
+     * @param  String          $parent_id current level
+     * @param  StudipSemTree   $tree      sem tree object
+     * @return array The tree structure of subjects of study.
+     */
+    private function buildTreeLevel($parent_id, &$tree) {
+        $level = array();
+        if ($tree->getKids($parent_id)) {
+            foreach ($tree->getKids($parent_id) as $kid) {
+                $data = $tree->tree_data[$kid];
+                $current = array(
+                    'id' => $data['studip_object_id'] ?: '',
+                    'name' => $data['name'],
+                    'tree_id' => $kid
+                );
+                $current['children'] = self::buildTreeLevel($kid, $tree);
+                $level[] = $current;
+            }
+        }
+        return $level;
+    }
+
 }
