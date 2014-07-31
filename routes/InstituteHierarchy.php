@@ -65,7 +65,7 @@ class InstituteHierarchy extends \RESTAPI\RouteMap {
                 $current = array(
                     'id' => $data['studip_object_id'] ?: '',
                     'name' => $data['name'],
-                    'tree_id' => $data['range_tree_id']
+                    'tree_id' => $kid
                 );
                 $current['children'] = self::buildRangeTreeLevel($kid, $tree);
                 $level[] = $current;
