@@ -2,7 +2,7 @@
 
 namespace RESTAPI\Routes;
 
-use \DBManager;
+use \DBManager, \TreeAbstract;
 
 /**
  * CourseData - TYPO3 routes for course related data, like available course
