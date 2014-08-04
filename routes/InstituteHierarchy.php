@@ -2,7 +2,7 @@
 
 namespace RESTAPI\Routes;
 
-use \Institute, \TreeAbstract;
+use \DBManager, \Institute, \TreeAbstract;
 
 /**
  * InstiuteHierarchyMap - TYPO3 routes for institute hierarchy related stuff
@@ -105,7 +105,11 @@ class InstituteHierarchy extends \RESTAPI\RouteMap {
         if ($children) {
             foreach ($children as $child) {
                 if ($name_only) {
-                    $result[$child['name']] = true;
+                    if ($child['name']) {
+                        $result[$child['name']] = true;
+                    }
+                } else {
+                    $result[] = $child;
                 }
             }
             $result = array_merge($result, self::getStatusgroupChildren(array_map(function($e){
