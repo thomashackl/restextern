@@ -71,7 +71,8 @@ class CourseData extends \RESTAPI\RouteMap {
                 $current = array(
                     'id' => $kid,
                     'name' => $data['name'],
-                    'tree_id' => $kid
+                    'tree_id' => $kid,
+                    'num_children' => sizeof($tree->getKids($kid))
                 );
                 if (!$depth || $current_level < $depth) {
                     $current['children'] = self::buildTreeLevel($kid, $depth, $tree, $current_level+1);
