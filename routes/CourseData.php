@@ -52,7 +52,7 @@ class CourseData extends \RESTAPI\RouteMap {
     }
 
     /**
-     * Recursively builds the tree structure of the range hierarchy.
+     * Recursively builds the tree structure of the sem tree hierarchy.
      *
      * @param  String          $parent_id current level
      * @param  StudipSemTree   $tree      sem tree object
