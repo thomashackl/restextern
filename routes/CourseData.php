@@ -42,24 +42,28 @@ class CourseData extends \RESTAPI\RouteMap {
 
 
     /**
-     * Returns the sem tree hierarchy, optionally starting at the given level.
+     * Returns the sem tree hierarchy, optionally starting at the given level
+     * and to the given depth.
      *
+     * @get /typo3/semtree/:parent/:depth
      * @get /typo3/semtree/:parent
      * @get /typo3/semtree
      */
-    public function getSemTree($parent_id = 'root') {
+    public function getSemTree($parent_id = 'root', $depth=0) {
         $tree = TreeAbstract::getInstance('StudipSemTree', array('visible_only' => 1));
-        return self::buildTreeLevel($parent_id, $tree);
+        return self::buildTreeLevel($parent_id, $depth, $tree);
     }
 
     /**
      * Recursively builds the tree structure of the sem tree hierarchy.
      *
-     * @param  String          $parent_id current level
-     * @param  StudipSemTree   $tree      sem tree object
+     * @param  String          $parent_id       start item
+     * @param  int             $depth           return $depth levels only
+     * @param  StudipSemTree   $tree            sem tree object
+     * @param  int             $current_level   current level in recursion
      * @return array The tree structure of subjects of study.
      */
-    private function buildTreeLevel($parent_id, &$tree) {
+    private function buildTreeLevel($parent_id, $depth, &$tree, $current_level=0) {
         $level = array();
         if ($tree->getKids($parent_id)) {
             foreach ($tree->getKids($parent_id) as $kid) {
@@ -69,7 +73,9 @@ class CourseData extends \RESTAPI\RouteMap {
                     'name' => $data['name'],
                     'tree_id' => $kid
                 );
-                $current['children'] = self::buildTreeLevel($kid, $tree);
+                if (!$depth || $current_level < $depth) {
+                    $current['children'] = self::buildTreeLevel($kid, $depth, $tree, $current_level+1);
+                }
                 $level[] = $current;
             }
         }
