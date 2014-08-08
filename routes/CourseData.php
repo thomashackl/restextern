@@ -42,13 +42,14 @@ class CourseData extends \RESTAPI\RouteMap {
 
 
     /**
-     * Returns the sem tree hierarchy.
+     * Returns the sem tree hierarchy, optionally starting at the given level.
      *
+     * @get /typo3/semtree/:parent
      * @get /typo3/semtree
      */
-    public function getSemTree() {
+    public function getSemTree($parent_id = 'root') {
         $tree = TreeAbstract::getInstance('StudipSemTree', array('visible_only' => 1));
-        return self::buildTreeLevel('root', $tree);
+        return self::buildTreeLevel($parent_id, $tree);
     }
 
     /**
@@ -64,7 +65,7 @@ class CourseData extends \RESTAPI\RouteMap {
             foreach ($tree->getKids($parent_id) as $kid) {
                 $data = $tree->tree_data[$kid];
                 $current = array(
-                    'id' => $data['studip_object_id'] ?: '',
+                    'id' => $kid,
                     'name' => $data['name'],
                     'tree_id' => $kid
                 );
