@@ -15,23 +15,32 @@ class InstituteHierarchy extends \RESTAPI\RouteMap {
     /**
      * Returns the institute hierarchy.
      *
+     * @get /typo3/institutes/:externtypes
      * @get /typo3/institutes
      */
-    public function getInstituteHierarchy() {
+    public function getInstituteHierarchy($externtypes='') {
         $institutes = array();
         // Get faculties.
         $faculties = Institute::findBySQL("`Institut_id`=`fakultaets_id` ORDER BY `Name`");
         foreach ($faculties as $faculty) {
             $data = array(
                 'id' => $faculty->id,
-                'name' => $faculty->name
+                'name' => $faculty->name,
+                'selectable' => true
             );
             $children = Institute::findByFaculty($faculty->id);
             if ($children) {
                 foreach ($children as $c) {
+                    if ($externtypes) {
+                        $extern = (sizeof(DBManager::get()->fetchFirst("SELECT `config_id` FROM `extern_config` WHERE `range_id`=? AND `extern_type` IN (?)",
+                            array($c->id, explode(',', $externtypes))) > 0);
+                    } else {
+                        $extern = true;
+                    }
                     $data['children'][] = array(
                         'id' => $c->id,
-                        'name' => $c->name
+                        'name' => $c->name,
+                        'selectable' => $extern
                     );
                 }
             }
@@ -43,11 +52,12 @@ class InstituteHierarchy extends \RESTAPI\RouteMap {
     /**
      * Returns the range tree hierarchy.
      *
+     * @get /typo3/rangetree/:externtypes
      * @get /typo3/rangetree
      */
-    public function getRangeTree() {
+    public function getRangeTree($externtypes='') {
         $tree = TreeAbstract::getInstance('StudipRangeTree', array('visible_only' => 1));
-        return self::buildRangeTreeLevel('root', $tree);
+        return self::buildRangeTreeLevel('root', $tree, $externtypes);
     }
 
     /**
@@ -74,17 +84,28 @@ class InstituteHierarchy extends \RESTAPI\RouteMap {
      * @param  StudipRangeTree $tree      range tree object
      * @return array The tree structure of institutes and pseudo levels.
      */
-    private function buildRangeTreeLevel($parent_id, &$tree) {
+    private function buildRangeTreeLevel($parent_id, &$tree, $externtypes) {
         $level = array();
         if ($tree->getKids($parent_id)) {
             foreach ($tree->getKids($parent_id) as $kid) {
                 $data = $tree->tree_data[$kid];
+                if ($externtypes && $data['studip_object_id']) {
+                    $extern = DBManager::get()->fetchFirst("SELECT `config_id` FROM `extern_config` WHERE `range_id`=? AND `extern_type` IN (?)",
+                        array($data['studip_object_id'], explode(',', $externtypes)));
+                } else {
+                    if ($data['studip_object_id']) {
+                        $extern = true;
+                    } else {
+                        $extern = false;
+                    }
+                }
                 $current = array(
                     'id' => $data['studip_object_id'] ?: '',
                     'name' => $data['name'],
-                    'tree_id' => $kid
+                    'tree_id' => $kid,
+                    'selectable' => $extern
                 );
-                $current['children'] = self::buildRangeTreeLevel($kid, $tree);
+                $current['children'] = self::buildRangeTreeLevel($kid, $tree, $externtypes);
                 $level[] = $current;
             }
         }
