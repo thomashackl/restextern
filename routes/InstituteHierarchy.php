@@ -33,7 +33,7 @@ class InstituteHierarchy extends \RESTAPI\RouteMap {
                 foreach ($children as $c) {
                     if ($externtypes) {
                         $extern = (sizeof(DBManager::get()->fetchFirst("SELECT `config_id` FROM `extern_config` WHERE `range_id`=? AND `extern_type` IN (?)",
-                            array($c->id, explode(',', $externtypes))) > 0);
+                            array($c->id, explode(',', $externtypes)))) > 0);
                     } else {
                         $extern = true;
                     }
