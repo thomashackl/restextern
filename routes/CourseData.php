@@ -81,7 +81,7 @@ class CourseData extends \RESTAPI\RouteMap {
                  * reached or we have found the full path to the selected
                  * element.
                  */
-                if ((!$depth || $current_level < $depth) || ($selected && $tree->isChildOf($kid, $selected))) {
+                if (!$depth || $current_level < $depth || ($selected && $tree->isChildOf($kid, $selected))) {
                     $current['children'] = self::buildTreeLevel($kid, $depth, $selected, $tree, $current_level+1);
                 }
                 $level[] = $current;
