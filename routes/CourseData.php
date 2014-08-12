@@ -45,13 +45,14 @@ class CourseData extends \RESTAPI\RouteMap {
      * Returns the sem tree hierarchy, optionally starting at the given level
      * and to the given depth.
      *
+     * @get /typo3/semtree/:parent/:depth/:selected
      * @get /typo3/semtree/:parent/:depth
      * @get /typo3/semtree/:parent
      * @get /typo3/semtree
      */
-    public function getSemTree($parent_id = 'root', $depth=0) {
+    public function getSemTree($parent_id = 'root', $depth=0, $selected='') {
         $tree = TreeAbstract::getInstance('StudipSemTree', array('visible_only' => 1));
-        return self::buildTreeLevel($parent_id, $depth, $tree);
+        return self::buildTreeLevel($parent_id, $depth, $selected, $tree);
     }
 
     /**
@@ -59,11 +60,12 @@ class CourseData extends \RESTAPI\RouteMap {
      *
      * @param  String          $parent_id       start item
      * @param  int             $depth           return $depth levels only
+     * @param  String          $selected        selected element to include in result
      * @param  StudipSemTree   $tree            sem tree object
      * @param  int             $current_level   current level in recursion
      * @return array The tree structure of subjects of study.
      */
-    private function buildTreeLevel($parent_id, $depth, &$tree, $current_level=0) {
+    private function buildTreeLevel($parent_id, $depth, $selected, &$tree, $current_level=0) {
         $level = array();
         if ($tree->getKids($parent_id)) {
             foreach ($tree->getKids($parent_id) as $kid) {
@@ -74,7 +76,12 @@ class CourseData extends \RESTAPI\RouteMap {
                     'tree_id' => $kid,
                     'num_children' => sizeof($tree->getKids($kid))
                 );
-                if (!$depth || $current_level < $depth) {
+                /*
+                 * We need to build tree recursively until the given depth is
+                 * reached or we have found the full path to the selected
+                 * element.
+                 */
+                if ((!$depth || $current_level < $depth) || ($selected && $tree->isChildOf($kid, $selected))) {
                     $current['children'] = self::buildTreeLevel($kid, $depth, $tree, $current_level+1);
                 }
                 $level[] = $current;
