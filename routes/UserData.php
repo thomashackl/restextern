@@ -20,7 +20,7 @@ class UserData extends \RESTAPI\RouteMap {
     public function searchUsers($searchterm) {
         $users = array();
         $users = DBManager::get()->fetchAll("SELECT DISTINCT a.`user_id`, a.`username`, a.`Vorname` AS firstname, a.`Nachname` AS lastname, u.`title_front`, u.`title_rear`
-            FROM `auth_user_md5`
+            FROM `auth_user_md5` a
                 INNER JOIN `user_info` u ON (a.`user_id`=u.`user_id`)
             WHERE a.`Vorname` LIKE :searchterm
                 OR a.`Nachname` LIKE :searchterm
