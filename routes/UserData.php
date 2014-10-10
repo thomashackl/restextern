@@ -27,8 +27,8 @@ class UserData extends \RESTAPI\RouteMap {
                 OR a.`username` LIKE :searchterm
                 OR CONCAT(a.`Vorname`, ' ', a.`Nachname`) LIKE :searchterm
                 OR CONCAT(a.`Nachname`, ' ', a.`Vorname`) LIKE :searchterm
-            ORDER BY a.`Nachname`, a.`Vorname`, a.`username`", 
-            array('searchterm' => '%'.urldecode($searchterm).'%'));
+            ORDER BY a.`Nachname`, a.`Vorname`, a.`username`",
+            array('searchterm' => '%'.utf8_decode(urldecode($searchterm)).'%'));
         return $users;
     }
 
