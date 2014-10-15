@@ -56,6 +56,15 @@ class CourseData extends \RESTAPI\RouteMap {
     }
 
     /**
+     * Returns all available semester entries.
+     *
+     * @get /typo3/allsemester
+     */
+    public function getAllSemester() {
+        return Semester::getAll();
+    }
+
+    /**
      * Recursively builds the tree structure of the sem tree hierarchy.
      *
      * @param  String          $parent_id       start item
