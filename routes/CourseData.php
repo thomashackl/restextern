@@ -61,7 +61,7 @@ class CourseData extends \RESTAPI\RouteMap {
      * @get /typo3/allsemesters
      */
     public function getAllSemesters() {
-        return Semester::getAll();
+        return \Semester::getAll();
     }
 
     /**
