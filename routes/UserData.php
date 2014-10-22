@@ -20,7 +20,7 @@ class UserData extends \RESTAPI\RouteMap {
     public function searchUsers($searchterm) {
         $users = array();
         $visible = array('yes', 'always');
-        if (Config::get()->USER_VISIBILITY_UNKNOWN) {
+        if (\Config::get()->USER_VISIBILITY_UNKNOWN) {
             $visible[] = 'unknown';
         }
         $users = DBManager::get()->fetchAll("SELECT DISTINCT a.`user_id`, a.`username`, a.`Vorname` AS firstname, a.`Nachname` AS lastname, u.`title_front`, u.`title_rear`
