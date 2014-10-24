@@ -72,10 +72,12 @@ class CourseData extends \RESTAPI\RouteMap {
      * @get /typo3/coursesearch/:searchterm/:semester_id
      */
     public function searchCourses($searchterm, $semester_id='') {
-        $query = "SELECT s.`Seminar_id` AS 'seminar_id',
-                s.`VeranstaltungsNummer` AS 'number', s.`Name` AS 'name', sd.`name` AS 'semester'
+        $query = "SELECT s.`Seminar_id` AS seminar_id,
+                s.`VeranstaltungsNummer` AS number, s.`Name` AS name,
+                sd.`name` AS semester, t.`name` AS type
             FROM `seminare` s
                 JOIN `semester_data` sd ON (s.`start_time` BETWEEN sd.`beginn` AND sd.`ende`)
+                JOIN `sem_types` t ON (s.`status`=t.`id`)
             WHERE (s.`VeranstaltungsNummer` LIKE :searchterm OR s.`Name` LIKE :searchterm)
                 AND s.`visible` = 1";
         $parameters = array(
