@@ -76,7 +76,8 @@ class CourseData extends \RESTAPI\RouteMap {
                 s.`VeranstaltungsNummer` AS 'number', s.`Name` AS 'name', sd.`name` AS 'semester'
             FROM `seminare` s
                 JOIN `semester_data` sd ON (s.`start_time` BETWEEN sd.`beginn` AND sd.`ende`)
-            WHERE (s.`VeranstaltungsNummer` LIKE :searchterm OR s.`Name´ LIKE :searchterm)";
+            WHERE (s.`VeranstaltungsNummer` LIKE :searchterm OR s.`Name` LIKE :searchterm)
+                AND s.`visible` = 1";
         $parameters = array(
             'searchterm' => '%'.utf8_decode(urldecode($searchterm)).'%'
         );
