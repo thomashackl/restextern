@@ -65,6 +65,32 @@ class CourseData extends \RESTAPI\RouteMap {
     }
 
     /**
+     * Finds courses matching the given search term. The search range can be
+     * restricted to a given semester.
+     *
+     * @get /typo3/coursesearch/:searchterm
+     * @get /typo3/coursesearch/:searchterm/:semester_id
+     */
+    public function searchCourses($searchterm, $semester_id='') {
+        $query = "SELECT s.`Seminar_id` AS 'seminar_id',
+                s.`VeranstaltungsNummer` AS 'number', s.`Name` AS 'name', sd.`name` AS 'semester'
+            FROM `seminare` s
+                JOIN `semester_data` sd ON (s.`start_time` BETWEEN sd.`beginn` AND sd.`ende`)
+            WHERE (s.`VeranstaltungsNummer` LIKE :searchterm OR s.`Name´ LIKE :searchterm)";
+        $parameters = array(
+            'searchterm' => '%'.utf8_decode(urldecode($searchterm)).'%'
+        );
+        if ($semester_id) {
+            $query .= " AND ((s.`start_time`+s.`duration_time` >= sd.`beginn`)
+                OR s.`duration_time` = -1)
+                AND sd.`semester_id`=:semester";
+            $parameters['semester'] = $semester_id;
+        }
+        $query .= " ORDER BY s.`start_time` DESC, number, name";
+        return DBManager::get()->fetchAll($query, $parameters);
+    }
+
+    /**
      * Recursively builds the tree structure of the sem tree hierarchy.
      *
      * @param  String          $parent_id       start item
