@@ -19,7 +19,8 @@ class CourseData extends \RESTAPI\RouteMap {
      * @get /typo3/coursetypes/:institute
      * @get /typo3/coursetypes
      */
-    public function getCourseTypes($institute='') {
+    public function getCourseTypes($institute='')
+    {
         $types = array();
         if ($institute) {
             $types = DBManager::get()->fetchAll(
@@ -50,7 +51,8 @@ class CourseData extends \RESTAPI\RouteMap {
      * @get /typo3/semtree/:parent
      * @get /typo3/semtree
      */
-    public function getSemTree($parent_id = 'root', $depth=0, $selected='') {
+    public function getSemTree($parent_id = 'root', $depth=0, $selected='')
+    {
         $tree = TreeAbstract::getInstance('StudipSemTree', array('visible_only' => 1));
         return self::buildTreeLevel($parent_id, $depth, $selected, $tree);
     }
@@ -60,7 +62,8 @@ class CourseData extends \RESTAPI\RouteMap {
      *
      * @get /typo3/allsemesters
      */
-    public function getAllSemesters() {
+    public function getAllSemesters()
+    {
         return \Semester::getAll();
     }
 
@@ -71,8 +74,9 @@ class CourseData extends \RESTAPI\RouteMap {
      * @get /typo3/coursesearch/:searchterm
      * @get /typo3/coursesearch/:searchterm/:semester_id
      */
-    public function searchCourses($searchterm, $semester_id='') {
-        $query = "SELECT s.`Seminar_id` AS seminar_id,
+    public function searchCourses($searchterm, $semester_id='')
+    {
+        $query = "SELECT s.`Seminar_id` AS course_id,
                 s.`VeranstaltungsNummer` AS number, s.`Name` AS name,
                 sd.`name` AS semester, t.`name` AS type
             FROM `seminare` s
@@ -94,6 +98,40 @@ class CourseData extends \RESTAPI\RouteMap {
     }
 
     /**
+     * Fetches the given course. There is already an identical route in the
+     * core API, but we need less and other data here.
+     *
+     * @get /typo3/course/:course_id
+     */
+    public function getCourse($course_id) {
+        $data = array();
+        $c = \Course::find($course_id);
+        if ($c->visible) {
+            $type = $c->getSemType();
+            $data = array(
+                'course_id' => $c->id,
+                'number' => $c->veranstaltungsnummer,
+                'name' => $c->name,
+                'type' => $type['name'],
+                'semester' => $c->start_semester->name,
+                'home_institute' => array(
+                        'institute_id' => $c->home_institut->id,
+                        'name' => $c->home_institut->name
+                    )
+            );
+            foreach ($c->institutes as $i) {
+                if ($i->id != $c->institut_id) {
+                    $data['participating_institutes'][] = array('institute_id' => $i->id, 'name' => $i->name);
+                }
+            }
+            usort($data['participating_institutes'], function ($a, $b) {
+                return strnatcasecmp($a['name'], $b['name']);
+            });
+        }
+        return $data;
+    }
+
+    /**
      * Recursively builds the tree structure of the sem tree hierarchy.
      *
      * @param  String          $parent_id       start item
@@ -103,7 +141,8 @@ class CourseData extends \RESTAPI\RouteMap {
      * @param  int             $current_level   current level in recursion
      * @return array The tree structure of subjects of study.
      */
-    private function buildTreeLevel($parent_id, $depth, $selected, &$tree, $current_level=0) {
+    private function buildTreeLevel($parent_id, $depth, $selected, &$tree, $current_level=0)
+    {
         $level = array();
         if ($tree->getKids($parent_id)) {
             foreach ($tree->getKids($parent_id) as $kid) {

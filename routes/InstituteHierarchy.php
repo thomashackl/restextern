@@ -13,6 +13,21 @@ use \DBManager, \Institute, \TreeAbstract;
 class InstituteHierarchy extends \RESTAPI\RouteMap {
 
     /**
+     * Fetches the given institute.
+     *
+     * @get /typo3/institute/:institute_id
+     */
+    public function getInstitute($institute_id) {
+        $data = array();
+        $i = \Institute::find($institute_id);
+        $data = array(
+            'institute_id' => $i->id,
+            'name' => $i->name,
+        );
+        return $data;
+    }
+
+    /**
      * Returns the institute hierarchy.
      *
      * @get /typo3/institutes/:externtypes
