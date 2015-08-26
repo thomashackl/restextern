@@ -22,7 +22,8 @@ class ExternalPages extends \RESTAPI\RouteMap {
      * @param String $institute_id an (optional) institute to narrow the search
      *                             focus to
      */
-    public function getExternalPageTypes($institute_id='') {
+    public function getExternalPageTypes($institute_id='')
+    {
         $types = array();
         $query = "SELECT DISTINCT `config_type` FROM `extern_config` ";
         $parameters = array();
@@ -41,7 +42,8 @@ class ExternalPages extends \RESTAPI\RouteMap {
      * @get /typo3/externconfigs/:institute_id/:types
      * @get /typo3/externconfigs/:institute_id
      */
-    public function getExternalPageConfigurations($institute_id, $types='') {
+    public function getExternalPageConfigurations($institute_id, $types='')
+    {
         $configs = array();
         $query = "SELECT `config_id`, `name`, `config_type`
             FROM `extern_config` WHERE `range_id`=?";
@@ -60,6 +62,20 @@ class ExternalPages extends \RESTAPI\RouteMap {
             );
         }
         return $configs;
+    }
+
+    /**
+     * Returns metadata about a given external page configuration.
+     *
+     * @get /typo3/externconfig/:config_id
+     */
+    public function getExternalPageConfiguration($config_id)
+    {
+        return DBManager::get()->fetchOne("SELECT `config_id`, `range_id`, `config_type`, `name`, `is_standard`
+            FROM `extern_config`
+            WHERE `config_id` = ?
+            LIMIT 1",
+            array($config_id));
     }
 
 }

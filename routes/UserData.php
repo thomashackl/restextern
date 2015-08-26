@@ -13,11 +13,68 @@ use \DBManager;
 class UserData extends \RESTAPI\RouteMap {
 
     /**
+     * Gets data for the given user. The difference to the core function is
+     * that we get a username instead of an ID here.
+     *
+     * @get /typo3/user/:username
+     */
+    public function getUser($username)
+    {
+        $user = $username ? \User::findByUsername($username) : $GLOBALS['user'];
+        return \RESTAPI\Routes\User::getUser($user->id);
+    }
+
+    /**
+     * Fetches the given user's institutes. The difference to the core
+     * function with the same name is that we need a username instead of an
+     * ID here.
+     *
+     * @get /typo3/user/:username/institutes
+     */
+    public function getInstitutes($username)
+    {
+        $query = "SELECT i0.Institut_id AS institute_id, i0.Name AS name,
+                         inst_perms AS perms, sprechzeiten AS consultation,
+                         raum AS room, ui.telefon AS phone, ui.fax,
+                         i0.Strasse AS street, i0.Plz AS city,
+                         i1.Name AS faculty_name, i1.Strasse AS faculty_street,
+                         i1.Plz AS faculty_city
+                  FROM user_inst AS ui
+                  JOIN auth_user_md5 a USING (user_id)
+                  JOIN Institute AS i0 USING (Institut_id)
+                  LEFT JOIN Institute AS i1 ON (i0.fakultaets_id = i1.Institut_id)
+                  WHERE ui.visible = 1 AND a.username = :username
+                  ORDER BY priority ASC";
+        $statement = \DBManager::get()->prepare($query);
+        $statement->bindValue(':username', $username);
+        $statement->execute();
+
+        $institutes = array(
+            'work'  => array(),
+            'study' => array(),
+        );
+
+        foreach ($statement->fetchAll(\PDO::FETCH_ASSOC) as $row) {
+            if ($row['perms'] === 'user') {
+                $institutes['study'][] = $row;
+            } else {
+                $institutes['work'][] = $row;
+            }
+        }
+
+        $this->etag(md5(serialize($institutes)));
+
+        $result = array_slice($institutes, $this->offset, $this->limit);
+        return $this->paginated($result, count($institutes), compact('username'));
+    }
+
+    /**
      * Finds users matching the given search term.
      *
      * @get /typo3/usersearch/:searchterm
      */
-    public function searchUsers($searchterm) {
+    public function searchUsers($searchterm)
+    {
         $users = array();
         $visible = array('yes', 'always');
         if (\Config::get()->USER_VISIBILITY_UNKNOWN) {
