@@ -24,7 +24,7 @@ class CourseData extends \RESTAPI\RouteMap {
         $types = array();
         if ($institute) {
             $types = DBManager::get()->fetchAll(
-                "SELECT DISTINCT t.`id`, t.`name` AS type, c.`name` AS classname
+                "SELECT DISTINCT t.`id`, t.`name` AS type, c.`name` AS classname, c.`id` AS typeclass
                 FROM `sem_types` t
                     INNER JOIN `sem_classes` c ON (t.`class`=c.`id`)
                     INNER JOIN `seminare` s ON (s.`status`=t.`id`)
@@ -33,7 +33,7 @@ class CourseData extends \RESTAPI\RouteMap {
                 ORDER BY c.`id`, t.`name`", array($institute));
         } else {
             $types = DBManager::get()->fetchAll(
-                "SELECT DISTINCT t.`id`, t.`name` AS type, c.`name` AS classname
+                "SELECT DISTINCT t.`id`, t.`name` AS type, c.`name` AS classname, c.`id` AS typeclass
                 FROM `sem_types` t
                     INNER JOIN `sem_classes` c ON (t.`class`=c.`id`)
                 ORDER BY c.`id`, t.`name`");
