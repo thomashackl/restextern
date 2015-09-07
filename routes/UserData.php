@@ -29,7 +29,7 @@ class UserData extends \RESTAPI\RouteMap {
      * function with the same name is that we need a username instead of an
      * ID here.
      *
-     * @get /typo3/user/:username/institutes
+     * @get /typo3/user_institutes/:username
      */
     public function getInstitutes($username)
     {
