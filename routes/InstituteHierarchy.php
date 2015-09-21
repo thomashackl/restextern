@@ -104,11 +104,12 @@ class InstituteHierarchy extends \RESTAPI\RouteMap {
         }
         $root = array(
             'id' => 'studip',
+            'tree_id' => 'root',
             'name' => $GLOBALS['UNI_NAME_CLEAN'],
             'children' => self::buildRangeTreeLevel('root', $tree, $externtypes),
             'selectable' => $extern
         );
-        return $root;
+        return array($root);
     }
 
     /**
@@ -141,7 +142,8 @@ class InstituteHierarchy extends \RESTAPI\RouteMap {
             foreach ($tree->getKids($parent_id) as $kid) {
                 $data = $tree->tree_data[$kid];
                 if ($externtypes && $data['studip_object_id']) {
-                    $extern = DBManager::get()->fetchFirst("SELECT `config_id` FROM `extern_config` WHERE `range_id`=? AND `extern_type` IN (?)",
+                    $extern = DBManager::get()->fetchFirst(
+                        "SELECT `config_id` FROM `extern_config` WHERE `range_id`=? AND `config_type` IN (?)",
                         array($data['studip_object_id'], explode(',', $externtypes)));
                 } else {
                     if ($data['studip_object_id']) {
