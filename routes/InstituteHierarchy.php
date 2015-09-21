@@ -35,19 +35,41 @@ class InstituteHierarchy extends \RESTAPI\RouteMap {
      */
     public function getInstituteHierarchy($externtypes='') {
         $institutes = array();
+        // Pseudo root node, needed for globally available extern configurations.
+        if ($externtypes) {
+            $extern = (sizeof(DBManager::get()->fetchFirst(
+                    "SELECT `config_id` FROM `extern_config` WHERE `range_id`='studip' AND `config_type` IN (?)",
+                    array(explode(',', $externtypes)))) > 0);
+        } else {
+            $extern = true;
+        }
+        $root = array(
+            'id' => 'studip',
+            'name' => $GLOBALS['UNI_NAME_CLEAN'],
+            'children' => array(),
+            'selectable' => $extern
+        );
         // Get faculties.
         $faculties = Institute::findBySQL("`Institut_id`=`fakultaets_id` ORDER BY `Name`");
         foreach ($faculties as $faculty) {
+            if ($externtypes) {
+                $extern = (sizeof(DBManager::get()->fetchFirst(
+                        "SELECT `config_id` FROM `extern_config` WHERE `range_id`=? AND `config_type` IN (?)",
+                        array($faculty->id, explode(',', $externtypes)))) > 0);
+            } else {
+                $extern = true;
+            }
             $data = array(
                 'id' => $faculty->id,
                 'name' => $faculty->name,
-                'selectable' => true
+                'selectable' => $extern
             );
             $children = Institute::findByFaculty($faculty->id);
             if ($children) {
                 foreach ($children as $c) {
                     if ($externtypes) {
-                        $extern = (sizeof(DBManager::get()->fetchFirst("SELECT `config_id` FROM `extern_config` WHERE `range_id`=? AND `extern_type` IN (?)",
+                        $extern = (sizeof(DBManager::get()->fetchFirst(
+                                "SELECT `config_id` FROM `extern_config` WHERE `range_id`=? AND `config_type` IN (?)",
                             array($c->id, explode(',', $externtypes)))) > 0);
                     } else {
                         $extern = true;
@@ -59,8 +81,9 @@ class InstituteHierarchy extends \RESTAPI\RouteMap {
                     );
                 }
             }
-            $institutes[] = $data;
+            $root['children'][] = $data;
         }
+        $institutes[] = $root;
         return $institutes;
     }
 
