@@ -95,7 +95,20 @@ class InstituteHierarchy extends \RESTAPI\RouteMap {
      */
     public function getRangeTree($externtypes='') {
         $tree = TreeAbstract::getInstance('StudipRangeTree', array('visible_only' => 1));
-        return self::buildRangeTreeLevel('root', $tree, $externtypes);
+        if ($externtypes) {
+            $extern = (sizeof(DBManager::get()->fetchFirst(
+                "SELECT `config_id` FROM `extern_config` WHERE `range_id`='studip' AND `config_type` IN (?)",
+                array(explode(',', $externtypes)))) > 0);
+        } else {
+            $extern = true;
+        }
+        $root = array(
+            'id' => 'studip',
+            'name' => $GLOBALS['UNI_NAME_CLEAN'],
+            'children' => self::buildRangeTreeLevel('root', $tree, $externtypes),
+            'selectable' => $extern
+        );
+        return $root;
     }
 
     /**
