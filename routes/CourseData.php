@@ -14,10 +14,10 @@ use \DBManager, \TreeAbstract;
 class CourseData extends \RESTAPI\RouteMap {
 
     /**
-     * Returns avaible course types.
+     * Returns available course types.
      *
-     * @get /typo3/coursetypes/:institute
-     * @get /typo3/coursetypes
+     * @get /extern/coursetypes/:institute
+     * @get /extern/coursetypes
      */
     public function getCourseTypes($institute='')
     {
@@ -48,10 +48,10 @@ class CourseData extends \RESTAPI\RouteMap {
      * Returns the sem tree hierarchy, optionally starting at the given level
      * and to the given depth.
      *
-     * @get /typo3/semtree/:parent/:depth/:selected
-     * @get /typo3/semtree/:parent/:depth
-     * @get /typo3/semtree/:parent
-     * @get /typo3/semtree
+     * @get /extern/semtree/:parent/:depth/:selected
+     * @get /extern/semtree/:parent/:depth
+     * @get /extern/semtree/:parent
+     * @get /extern/semtree
      */
     public function getSemTree($parent_id = 'root', $depth=0, $selected='')
     {
@@ -62,7 +62,7 @@ class CourseData extends \RESTAPI\RouteMap {
     /**
      * Returns all available semester entries.
      *
-     * @get /typo3/allsemesters
+     * @get /extern/allsemesters
      */
     public function getAllSemesters()
     {
@@ -73,8 +73,8 @@ class CourseData extends \RESTAPI\RouteMap {
      * Finds courses matching the given search term. The search range can be
      * restricted to a given semester.
      *
-     * @get /typo3/coursesearch/:searchterm/:semester_id
-     * @get /typo3/coursesearch/:searchterm
+     * @get /extern/coursesearch/:searchterm/:semester_id
+     * @get /extern/coursesearch/:searchterm
      */
     public function searchCourses($searchterm, $semester_id='')
     {
@@ -104,10 +104,10 @@ class CourseData extends \RESTAPI\RouteMap {
      * restricted to a given semester, an institute or a course type.
      * More data is returned than in searchCourses.
      *
-     * @get /typo3/extendedcoursesearch/:searchterm/:semester_id/:institute_id/:coursetype
-     * @get /typo3/extendedcoursesearch/:searchterm/:semester_id/:institute_id
-     * @get /typo3/extendedcoursesearch/:searchterm/:semester_id
-     * @get /typo3/extendedcoursesearch/:searchterm
+     * @get /extern/extendedcoursesearch/:searchterm/:semester_id/:institute_id/:coursetype
+     * @get /extern/extendedcoursesearch/:searchterm/:semester_id/:institute_id
+     * @get /extern/extendedcoursesearch/:searchterm/:semester_id
+     * @get /extern/extendedcoursesearch/:searchterm
      */
     public function extendedCourseSearch($searchterm, $semester_id='', $institute_id='', $coursetype='')
     {
@@ -175,7 +175,7 @@ class CourseData extends \RESTAPI\RouteMap {
      * Fetches the given course. There is already an identical route in the
      * core API, but we need less and other data here.
      *
-     * @get /typo3/course/:course_id
+     * @get /extern/course/:course_id
      */
     public function getCourse($course_id) {
         $data = array();
