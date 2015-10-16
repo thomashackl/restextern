@@ -83,8 +83,15 @@ class CourseData extends \RESTAPI\RouteMap {
                 sd.`name` AS semester, t.`name` AS type
             FROM `seminare` s
                 JOIN `semester_data` sd ON (s.`start_time` BETWEEN sd.`beginn` AND sd.`ende`)
-                JOIN `sem_types` t ON (s.`status`=t.`id`)
-            WHERE (s.`VeranstaltungsNummer` LIKE :searchterm OR s.`Name` LIKE :searchterm)
+                JOIN `sem_types` t ON (s.`status` = t.`id`)
+                JOIN `seminar_user` su ON (su.`Seminar_id` = s.`Seminar_id` AND su.`status`='dozent')
+                JOIN `auth_user_md5` a ON (a.`user_id` = su.`user_id`)
+            WHERE (s.`VeranstaltungsNummer` LIKE :searchterm
+                    OR s.`Name` LIKE :searchterm
+                    OR a.`Vorname` LIKE :searchterm
+                    OR a.`Nachname` LIKE :searchterm
+                    OR CONCAT_WS(' ', a.`Vorname`, a.`Nachname`) LIKE :searchterm
+                    OR CONCAT_WS(' ', a.`Nachname`, a.`Vorname`) LIKE :searchterm)
                 AND s.`visible` = 1";
         $parameters = array(
             'searchterm' => '%'.utf8_decode(urldecode($searchterm)).'%'
@@ -113,10 +120,16 @@ class CourseData extends \RESTAPI\RouteMap {
     {
         $select = "SELECT DISTINCT s.*";
         $from = " FROM `seminare` s
+            JOIN `seminar_user` su ON (su.`Seminar_id` = s.`Seminar_id` AND su.`status`='dozent')
+            JOIN `auth_user_md5` a ON (a.`user_id` = su.`user_id`)
             ";
         $where = " WHERE (s.`VeranstaltungsNummer` LIKE :searchterm
                 OR s.`Name` LIKE :searchterm
-                OR s.`Untertitel` LIKE :searchterm)
+                OR s.`Untertitel` LIKE :searchterm
+                OR a.`Vorname` LIKE :searchterm
+                OR a.`Nachname` LIKE :searchterm
+                OR CONCAT_WS(' ', a.`Vorname`, a.`Nachname`) LIKE :searchterm
+                OR CONCAT_WS(' ', a.`Nachname`, a.`Vorname`) LIKE :searchterm)
             AND s.`visible` = 1
             AND s.`status` NOT IN (:excludetypes)";
         $parameters = array(
