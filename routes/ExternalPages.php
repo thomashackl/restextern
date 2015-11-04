@@ -18,7 +18,7 @@ class ExternalPages extends \RESTAPI\RouteMap {
     /**
      * Returns all configured external page types.
      *
-     * @get /typo3/externalpagetypes
+     * @get /extern/externalpagetypes
      * @param String $institute_id an (optional) institute to narrow the search
      *                             focus to
      */
@@ -39,8 +39,8 @@ class ExternalPages extends \RESTAPI\RouteMap {
      * Returns all configurations for external pages that belong to the given
      * institute.
      *
-     * @get /typo3/externconfigs/:institute_id/:types
-     * @get /typo3/externconfigs/:institute_id
+     * @get /extern/externconfigs/:institute_id/:types
+     * @get /extern/externconfigs/:institute_id
      */
     public function getExternalPageConfigurations($institute_id, $types='')
     {
@@ -67,7 +67,7 @@ class ExternalPages extends \RESTAPI\RouteMap {
     /**
      * Returns metadata about a given external page configuration.
      *
-     * @get /typo3/externconfig/:config_id
+     * @get /extern/externconfig/:config_id
      */
     public function getExternalPageConfiguration($config_id)
     {

@@ -16,7 +16,7 @@ class UserData extends \RESTAPI\RouteMap {
      * Gets data for the given user. The difference to the core function is
      * that we get a username instead of an ID here.
      *
-     * @get /typo3/user/:username
+     * @get /extern/user/:username
      */
     public function getUser($username)
     {
@@ -29,7 +29,7 @@ class UserData extends \RESTAPI\RouteMap {
      * function with the same name is that we need a username instead of an
      * ID here.
      *
-     * @get /typo3/user_institutes/:username
+     * @get /extern/user_institutes/:username
      */
     public function getInstitutes($username)
     {
@@ -71,7 +71,7 @@ class UserData extends \RESTAPI\RouteMap {
     /**
      * Finds users matching the given search term.
      *
-     * @get /typo3/usersearch/:searchterm
+     * @get /extern/usersearch/:searchterm
      */
     public function searchUsers($searchterm)
     {

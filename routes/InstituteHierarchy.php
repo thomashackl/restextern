@@ -15,7 +15,7 @@ class InstituteHierarchy extends \RESTAPI\RouteMap {
     /**
      * Fetches the given institute.
      *
-     * @get /typo3/institute/:institute_id
+     * @get /extern/institute/:institute_id
      */
     public function getInstitute($institute_id) {
         $data = array();
@@ -30,8 +30,8 @@ class InstituteHierarchy extends \RESTAPI\RouteMap {
     /**
      * Returns the institute hierarchy.
      *
-     * @get /typo3/institutes/:externtypes
-     * @get /typo3/institutes
+     * @get /extern/institutes/:externtypes
+     * @get /extern/institutes
      */
     public function getInstituteHierarchy($externtypes='') {
         $institutes = array();
@@ -90,8 +90,8 @@ class InstituteHierarchy extends \RESTAPI\RouteMap {
     /**
      * Returns the range tree hierarchy.
      *
-     * @get /typo3/rangetree/:externtypes
-     * @get /typo3/rangetree
+     * @get /extern/rangetree/:externtypes
+     * @get /extern/rangetree
      */
     public function getRangeTree($externtypes='') {
         $tree = TreeAbstract::getInstance('StudipRangeTree', array('visible_only' => 1));
@@ -116,8 +116,8 @@ class InstituteHierarchy extends \RESTAPI\RouteMap {
      * Returns all statusgroup names found at the given institute
      * (and sublevels if configured). The statusgroup ID is not considered.
      *
-     * @get /typo3/statusgroupnames/:institute/:aggregate
-     * @get /typo3/statusgroupnames/:institute
+     * @get /extern/statusgroupnames/:institute/:aggregate
+     * @get /extern/statusgroupnames/:institute
      */
     public function getStatusgroupNames($institute, $aggregate=false) {
         if ($aggregate) {
