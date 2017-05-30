@@ -125,8 +125,7 @@ class InstituteHierarchy extends \RESTAPI\RouteMap {
         } else {
             $ids = array($institute);
         }
-        $groups = DBManager::get()->fetchAll("SELECT DISTINCT `statusgruppe_id`, `name` FROM `statusgruppen` WHERE `range_id` IN (?) ORDER BY `name`", array($ids));
-        return array_keys(self::getStatusgroupChildren($ids, true));
+        return self::getStatusgroupChildren($ids);
     }
 
     /**
@@ -183,7 +182,10 @@ class InstituteHierarchy extends \RESTAPI\RouteMap {
                         $result[$child['name']] = true;
                     }
                 } else {
-                    $result[] = $child;
+                    $result[] = array(
+                        'id' => $child['statusgruppe_id'],
+                        'name' => $child['name']
+                    );
                 }
             }
             $result = array_merge($result, self::getStatusgroupChildren(array_map(function($e){
