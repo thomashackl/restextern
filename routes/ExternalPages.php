@@ -11,7 +11,7 @@ namespace RESTAPI\Routes;
 
 use \DBManager, \Request;
 
-require_once($GLOBALS['RELATIVE_PATH_EXTERN'].'/extern_config.inc.php');
+require_once($GLOBALS['STUDIP_BASE_PATH'] . '/lib/extern/extern_config.inc.php');
 
 class ExternalPages extends \RESTAPI\RouteMap {
 
