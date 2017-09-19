@@ -92,7 +92,7 @@ class UserData extends \RESTAPI\RouteMap {
                 AND a.`visible` IN (:visible)
                 AND ui.`inst_perms` != 'user'
             ORDER BY a.`Nachname`, a.`Vorname`, a.`username`",
-            array('searchterm' => '%'.utf8_decode(urldecode($searchterm)).'%', 'visible' => $visible));
+            array('searchterm' => '%'.urldecode($searchterm).'%', 'visible' => $visible));
         return $users;
     }
 
