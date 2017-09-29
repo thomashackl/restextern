@@ -45,7 +45,7 @@ class InstituteHierarchy extends \RESTAPI\RouteMap {
         }
         $root = array(
             'id' => 'studip',
-            'name' => Config::get()->UNI_NAME_CLEAN,
+            'name' => \Config::get()->UNI_NAME_CLEAN,
             'children' => array(),
             'selectable' => $extern
         );
