@@ -21,7 +21,7 @@ class UserData extends \RESTAPI\RouteMap {
     public function getUser($username)
     {
         $user = $username ? \User::findByUsername($username) : $GLOBALS['user'];
-        return \RESTAPI\Routes\User::getUser($user->id);
+        return $this->redirect('user/' . $user->id);
     }
 
     /**
