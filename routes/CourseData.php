@@ -66,7 +66,7 @@ class CourseData extends \RESTAPI\RouteMap {
      */
     public function getAllSemesters()
     {
-        return \Semester::getAll();
+        return array_map(function ($s) { return $s->toArray(); }, \Semester::getAll());
     }
 
     /**
