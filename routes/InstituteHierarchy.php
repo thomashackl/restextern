@@ -51,7 +51,6 @@ class InstituteHierarchy extends \RESTAPI\RouteMap {
         );
         // Get faculties.
         $faculties = Institute::findBySQL("`Institut_id`=`fakultaets_id` ORDER BY `Name`");
-        $log = fopen('/Applications/MAMP/tmp/php/t3.log', 'w');
         foreach ($faculties as $faculty) {
             if ($externtypes) {
                 $extern = (sizeof(DBManager::get()->fetchFirst(
@@ -85,8 +84,6 @@ class InstituteHierarchy extends \RESTAPI\RouteMap {
             $root['children'][] = $data;
         }
         $institutes[] = $root;
-        fwrite($log, print_r($institutes, 1));
-        fclose($log);
         return $institutes;
     }
 

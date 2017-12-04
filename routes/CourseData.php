@@ -158,7 +158,6 @@ class CourseData extends \RESTAPI\RouteMap {
             $parameters['coursetype'] = $coursetype;
         }
         $query = $select.$from.$where.$order;
-        $log = fopen('/Applications/MAMP/tmp/php/tx.log', 'w');
         $data = DBManager::get()->fetchAll($query, $parameters, 'Course::buildExisting');
 
         $courses = array();
