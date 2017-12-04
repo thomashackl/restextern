@@ -22,7 +22,7 @@ class InstituteHierarchy extends \RESTAPI\RouteMap {
         $i = \Institute::find($institute_id);
         $data = array(
             'institute_id' => $i->id,
-            'name' => $i->name,
+            'name' => ($i->name instanceof \I18NString) ? $i->name->original() : $i->name,
         );
         return $data;
     }
@@ -51,6 +51,7 @@ class InstituteHierarchy extends \RESTAPI\RouteMap {
         );
         // Get faculties.
         $faculties = Institute::findBySQL("`Institut_id`=`fakultaets_id` ORDER BY `Name`");
+        $log = fopen('/Applications/MAMP/tmp/php/t3.log', 'w');
         foreach ($faculties as $faculty) {
             if ($externtypes) {
                 $extern = (sizeof(DBManager::get()->fetchFirst(
@@ -61,7 +62,7 @@ class InstituteHierarchy extends \RESTAPI\RouteMap {
             }
             $data = array(
                 'id' => $faculty->id,
-                'name' => $faculty->name,
+                'name' => ($faculty->name instanceof \I18NString) ? $faculty->name->original() : $faculty->name,
                 'selectable' => $extern
             );
             $children = Institute::findByFaculty($faculty->id);
@@ -76,7 +77,7 @@ class InstituteHierarchy extends \RESTAPI\RouteMap {
                     }
                     $data['children'][] = array(
                         'id' => $c->id,
-                        'name' => $c->name,
+                        'name' => ($c->name instanceof \I18NString) ? $c->name->original() : $c->name,
                         'selectable' => $extern
                     );
                 }
@@ -84,6 +85,8 @@ class InstituteHierarchy extends \RESTAPI\RouteMap {
             $root['children'][] = $data;
         }
         $institutes[] = $root;
+        fwrite($log, print_r($institutes, 1));
+        fclose($log);
         return $institutes;
     }
 

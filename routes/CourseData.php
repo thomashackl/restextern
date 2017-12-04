@@ -167,8 +167,8 @@ class CourseData extends \RESTAPI\RouteMap {
             $course = array(
                 'id' => $c->id,
                 'number' => $c->veranstaltungsnummer,
-                'name' => $c->name,
-                'subtitle' => $c->untertitel,
+                'name' => ($c->name instanceof \I18NString) ? $c->name->original() : $c->name,
+                'subtitle' => ($c->untertitel instanceof \I18NString) ? $c->untertitel->original() : $c->untertitel,
                 'type' => $GLOBALS['SEM_TYPE'][$c->status]['name']
             );
             foreach (\SimpleORMapCollection::createFromArray($c->getMembersWithStatus('dozent'))->orderBy('position') as $l) {
@@ -198,17 +198,19 @@ class CourseData extends \RESTAPI\RouteMap {
             $data = array(
                 'course_id' => $c->id,
                 'number' => $c->veranstaltungsnummer,
-                'name' => $c->name,
+                'name' => ($c->name instanceof \I18NString) ? $c->name->original() : $c->name,
                 'type' => $type['name'],
                 'semester' => $c->start_semester->name,
                 'home_institute' => array(
                         'institute_id' => $c->home_institut->id,
-                        'name' => $c->home_institut->name
+                        'name' => ($c->home_institut->name instanceof \I18NString) ?
+                            $c->home_institut->name->original() : $c->home_institut->name
                     )
             );
             foreach ($c->institutes as $i) {
                 if ($i->id != $c->institut_id) {
-                    $data['participating_institutes'][] = array('institute_id' => $i->id, 'name' => $i->name);
+                    $data['participating_institutes'][] = array('institute_id' => $i->id,
+                        'name' => ($i->name instanceof \I18NString) ? $i->name->original() : $i->name);
                 }
             }
             usort($data['participating_institutes'], function ($a, $b) {
