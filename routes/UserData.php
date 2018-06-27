@@ -10,7 +10,7 @@ use \DBManager;
  * @author Thomas Hackl <thomas.hackl@uni-passau.de>
  */
 
-class UserData extends \RESTAPI\RouteMap {
+class UserData extends \RESTAPI\Routes\User {
 
     /**
      * Gets data for the given user. The difference to the core function is
@@ -18,10 +18,10 @@ class UserData extends \RESTAPI\RouteMap {
      *
      * @get /extern/user/:username
      */
-    public function getUser($username)
+    public function getExternUser($username)
     {
         $user = $username ? \User::findByUsername($username) : $GLOBALS['user'];
-        return $this->redirect('user/' . $user->id);
+        return parent::getUser($user->id);
     }
 
     /**
