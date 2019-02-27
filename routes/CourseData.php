@@ -168,7 +168,8 @@ class CourseData extends \RESTAPI\RouteMap {
                 'number' => $c->veranstaltungsnummer,
                 'name' => ($c->name instanceof \I18NString) ? $c->name->original() : $c->name,
                 'subtitle' => ($c->untertitel instanceof \I18NString) ? $c->untertitel->original() : $c->untertitel,
-                'type' => $GLOBALS['SEM_TYPE'][$c->status]['name']
+                'type' => $GLOBALS['SEM_TYPE'][$c->status]['name'],
+                'lecturers' => array()
             );
             foreach (\SimpleORMapCollection::createFromArray($c->getMembersWithStatus('dozent'))->orderBy('position') as $l) {
                 $course['lecturers'][] = array(
@@ -204,7 +205,8 @@ class CourseData extends \RESTAPI\RouteMap {
                         'institute_id' => $c->home_institut->id,
                         'name' => ($c->home_institut->name instanceof \I18NString) ?
                             $c->home_institut->name->original() : $c->home_institut->name
-                    )
+                    ),
+                'participating_institutes' => array()
             );
             foreach ($c->institutes as $i) {
                 if ($i->id != $c->institut_id) {
