@@ -234,14 +234,18 @@ class CourseData extends \RESTAPI\RouteMap {
     private function buildTreeLevel($parent_id, $depth, $selected, &$tree, $current_level=0)
     {
         $level = array();
-        if ($tree->getKids($parent_id)) {
-            foreach ($tree->getKids($parent_id) as $kid) {
+        $kids = $tree->getKids($parent_id);
+        if (is_array($kids) && count($kids) > 0) {
+            foreach ($kids as $kid) {
                 $data = $tree->tree_data[$kid];
+
+                $kidskids = $tree->getKids($kid);
+
                 $current = array(
                     'id' => $kid,
                     'name' => $data['name'],
                     'tree_id' => $kid,
-                    'num_children' => sizeof($tree->getKids($kid))
+                    'num_children' => is_array($kidskids) ? count($kidskids) : 0
                 );
                 /*
                  * We need to build tree recursively until the given depth is
