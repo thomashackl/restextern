@@ -92,9 +92,11 @@ class CourseData extends \RESTAPI\RouteMap {
                     OR a.`Nachname` LIKE :searchterm
                     OR CONCAT_WS(' ', a.`Vorname`, a.`Nachname`) LIKE :searchterm
                     OR CONCAT_WS(' ', a.`Nachname`, a.`Vorname`) LIKE :searchterm)
-                AND s.`visible` = 1";
+                AND s.`visible` = 1
+                AND s.`status` NOT IN (:studygroups)";
         $parameters = array(
-            'searchterm' => '%'.urldecode($searchterm).'%'
+            'searchterm' => '%'.urldecode($searchterm).'%',
+            'studygroups' => studygroup_sem_types() ?: array()
         );
         if ($semester_id) {
             $query .= " AND ((s.`start_time`+s.`duration_time` >= sd.`beginn`)
