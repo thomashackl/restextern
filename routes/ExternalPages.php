@@ -24,9 +24,9 @@ class ExternalPages extends \RESTAPI\RouteMap {
      */
     public function getExternalPageTypes($institute_id='')
     {
-        $types = array();
+        $types = [];
         $query = "SELECT DISTINCT `config_type` FROM `extern_config` ";
-        $parameters = array();
+        $parameters = [];
         if (Request::option('institute_id')) {
             $query .= "WHERE `range_id`=? ";
             $parameters[] = $institute_id;
@@ -44,22 +44,22 @@ class ExternalPages extends \RESTAPI\RouteMap {
      */
     public function getExternalPageConfigurations($institute_id, $types='')
     {
-        $configs = array();
+        $configs = [];
         $query = "SELECT `config_id`, `name`, `config_type`
             FROM `extern_config` WHERE `range_id`=?";
-        $parameters = array($institute_id);
+        $parameters = [$institute_id];
         if ($types) {
             $query .= " AND `config_type` IN (?)";
-            $parameters[] = array(explode(',', $types));
+            $parameters[] = [explode(',', $types)];
         }
         $query .= "ORDER BY `config_type`, `name`";
         $data = DBManager::get()->fetchAll($query, $parameters);
         foreach ($data as $entry) {
-            $configs[] = array(
+            $configs[] = [
                 'id' => $entry['config_id'],
                 'name' => $entry['name'],
                 'type' => $GLOBALS['EXTERN_MODULE_TYPES'][$entry['config_type']]['module']
-            );
+            ];
         }
         return $configs;
     }
@@ -75,7 +75,7 @@ class ExternalPages extends \RESTAPI\RouteMap {
             FROM `extern_config`
             WHERE `config_id` = ?
             LIMIT 1",
-            array($config_id));
+            [$config_id]);
     }
 
 }

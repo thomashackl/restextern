@@ -18,12 +18,12 @@ class InstituteHierarchy extends \RESTAPI\RouteMap {
      * @get /extern/institute/:institute_id
      */
     public function getInstitute($institute_id) {
-        $data = array();
+        $data = [];
         $i = \Institute::find($institute_id);
-        $data = array(
+        $data = [
             'institute_id' => $i->id,
             'name' => ($i->name instanceof \I18NString) ? $i->name->original() : $i->name,
-        );
+        ];
         return $data;
     }
 
@@ -34,51 +34,51 @@ class InstituteHierarchy extends \RESTAPI\RouteMap {
      * @get /extern/institutes
      */
     public function getInstituteHierarchy($externtypes='') {
-        $institutes = array();
+        $institutes = [];
         // Pseudo root node, needed for globally available extern configurations.
         if ($externtypes) {
             $extern = (sizeof(DBManager::get()->fetchFirst(
                     "SELECT `config_id` FROM `extern_config` WHERE `range_id`='studip' AND `config_type` IN (?)",
-                    array(explode(',', $externtypes)))) > 0);
+                    [explode(',', $externtypes)])) > 0);
         } else {
             $extern = true;
         }
-        $root = array(
+        $root = [
             'id' => 'studip',
             'name' => \Config::get()->UNI_NAME_CLEAN,
-            'children' => array(),
+            'children' => [],
             'selectable' => $extern
-        );
+        ];
         // Get faculties.
         $faculties = Institute::findBySQL("`Institut_id`=`fakultaets_id` ORDER BY `Name`");
         foreach ($faculties as $faculty) {
             if ($externtypes) {
                 $extern = (sizeof(DBManager::get()->fetchFirst(
                         "SELECT `config_id` FROM `extern_config` WHERE `range_id`=? AND `config_type` IN (?)",
-                        array($faculty->id, explode(',', $externtypes)))) > 0);
+                        [$faculty->id, explode(',', $externtypes)])) > 0);
             } else {
                 $extern = true;
             }
-            $data = array(
+            $data = [
                 'id' => $faculty->id,
                 'name' => ($faculty->name instanceof \I18NString) ? $faculty->name->original() : $faculty->name,
                 'selectable' => $extern
-            );
+            ];
             $children = Institute::findByFaculty($faculty->id);
             if ($children) {
                 foreach ($children as $c) {
                     if ($externtypes) {
                         $extern = (sizeof(DBManager::get()->fetchFirst(
                                 "SELECT `config_id` FROM `extern_config` WHERE `range_id`=? AND `config_type` IN (?)",
-                            array($c->id, explode(',', $externtypes)))) > 0);
+                            [$c->id, explode(',', $externtypes)])) > 0);
                     } else {
                         $extern = true;
                     }
-                    $data['children'][] = array(
+                    $data['children'][] = [
                         'id' => $c->id,
                         'name' => ($c->name instanceof \I18NString) ? $c->name->original() : $c->name,
                         'selectable' => $extern
-                    );
+                    ];
                 }
             }
             $root['children'][] = $data;
@@ -94,22 +94,22 @@ class InstituteHierarchy extends \RESTAPI\RouteMap {
      * @get /extern/rangetree
      */
     public function getRangeTree($externtypes='') {
-        $tree = TreeAbstract::getInstance('StudipRangeTree', array('visible_only' => 1));
+        $tree = TreeAbstract::getInstance('StudipRangeTree', ['visible_only' => 1]);
         if ($externtypes) {
             $extern = (sizeof(DBManager::get()->fetchFirst(
                 "SELECT `config_id` FROM `extern_config` WHERE `range_id`='studip' AND `config_type` IN (?)",
-                array(explode(',', $externtypes)))) > 0);
+                [explode(',', $externtypes)])) > 0);
         } else {
             $extern = true;
         }
-        $root = array(
+        $root = [
             'id' => 'studip',
             'tree_id' => 'root',
             'name' => Config::get()->UNI_NAME_CLEAN,
             'children' => self::buildRangeTreeLevel('root', $tree, $externtypes),
             'selectable' => $extern
-        );
-        return array($root);
+        ];
+        return [$root];
     }
 
     /**
@@ -121,9 +121,9 @@ class InstituteHierarchy extends \RESTAPI\RouteMap {
      */
     public function getStatusgroupNames($institute, $aggregate=false) {
         if ($aggregate) {
-            $ids = DBManager::get()->fetchAll("SELECT `Institut_id` FROM `Institute` WHERE `fakultaets_id`=?", array($institute));
+            $ids = DBManager::get()->fetchAll("SELECT `Institut_id` FROM `Institute` WHERE `fakultaets_id`=?", [$institute]);
         } else {
-            $ids = array($institute);
+            $ids = [$institute];
         }
         return self::getStatusgroupChildren($ids);
     }
@@ -136,14 +136,14 @@ class InstituteHierarchy extends \RESTAPI\RouteMap {
      * @return array The tree structure of institutes and pseudo levels.
      */
     private function buildRangeTreeLevel($parent_id, &$tree, $externtypes) {
-        $level = array();
+        $level = [];
         if ($tree->getKids($parent_id)) {
             foreach ($tree->getKids($parent_id) as $kid) {
                 $data = $tree->tree_data[$kid];
                 if ($externtypes && $data['studip_object_id']) {
                     $extern = DBManager::get()->fetchFirst(
                         "SELECT `config_id` FROM `extern_config` WHERE `range_id`=? AND `config_type` IN (?)",
-                        array($data['studip_object_id'], explode(',', $externtypes)));
+                        [$data['studip_object_id'], explode(',', $externtypes)]);
                 } else {
                     if ($data['studip_object_id']) {
                         $extern = true;
@@ -151,12 +151,12 @@ class InstituteHierarchy extends \RESTAPI\RouteMap {
                         $extern = false;
                     }
                 }
-                $current = array(
+                $current = [
                     'id' => $data['studip_object_id'] ?: '',
                     'name' => $data['name'],
                     'tree_id' => $kid,
                     'selectable' => $extern
-                );
+                ];
                 $current['children'] = self::buildRangeTreeLevel($kid, $tree, $externtypes);
                 $level[] = $current;
             }
@@ -173,8 +173,8 @@ class InstituteHierarchy extends \RESTAPI\RouteMap {
      * @return array the groups (or just their names) belonging to the given IDs
      */
     private function getStatusgroupChildren($ids, $name_only=false) {
-        $result = array();
-        $children = DBManager::get()->fetchAll("SELECT `statusgruppe_id`, `name`, `range_id` FROM `statusgruppen` WHERE `range_id` IN (?) ORDER BY `name`", array($ids));
+        $result = [];
+        $children = DBManager::get()->fetchAll("SELECT `statusgruppe_id`, `name`, `range_id` FROM `statusgruppen` WHERE `range_id` IN (?) ORDER BY `name`", [$ids]);
         if ($children) {
             foreach ($children as $child) {
                 if ($name_only) {
@@ -182,10 +182,10 @@ class InstituteHierarchy extends \RESTAPI\RouteMap {
                         $result[$child['name']] = true;
                     }
                 } else {
-                    $result[] = array(
+                    $result[] = [
                         'id' => $child['statusgruppe_id'],
                         'name' => $child['name']
-                    );
+                    ];
                 }
             }
             $result = array_merge($result, self::getStatusgroupChildren(array_map(function($e){

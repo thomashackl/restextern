@@ -21,7 +21,7 @@ class CourseData extends \RESTAPI\RouteMap {
      */
     public function getCourseTypes($institute='')
     {
-        $types = array();
+        $types = [];
         if ($institute) {
             $types = DBManager::get()->fetchAll(
                 "SELECT DISTINCT t.`id`, t.`name` AS type, c.`name` AS classname, c.`id` AS typeclass
@@ -31,7 +31,7 @@ class CourseData extends \RESTAPI\RouteMap {
                     INNER JOIN `seminar_inst` si ON (s.`Seminar_id`=si.`seminar_id`)
                 WHERE si.`institut_id`=?
                     AND c.`studygroup_mode` != 1
-                ORDER BY c.`id`, t.`name`", array($institute));
+                ORDER BY c.`id`, t.`name`", [$institute]);
         } else {
             $types = DBManager::get()->fetchAll(
                 "SELECT DISTINCT t.`id`, t.`name` AS type, c.`name` AS classname, c.`id` AS typeclass
@@ -55,7 +55,7 @@ class CourseData extends \RESTAPI\RouteMap {
      */
     public function getSemTree($parent_id = 'root', $depth=0, $selected='')
     {
-        $tree = TreeAbstract::getInstance('StudipSemTree', array('visible_only' => 1));
+        $tree = TreeAbstract::getInstance('StudipSemTree', ['visible_only' => 1]);
         return self::buildTreeLevel($parent_id, $depth, $selected, $tree);
     }
 
@@ -94,10 +94,10 @@ class CourseData extends \RESTAPI\RouteMap {
                     OR CONCAT_WS(' ', a.`Nachname`, a.`Vorname`) LIKE :searchterm)
                 AND s.`visible` = 1
                 AND s.`status` NOT IN (:studygroups)";
-        $parameters = array(
+        $parameters = [
             'searchterm' => '%'.urldecode($searchterm).'%',
-            'studygroups' => studygroup_sem_types() ?: array()
-        );
+            'studygroups' => studygroup_sem_types() ?: []
+        ];
         if ($semester_id) {
             $query .= " AND ((s.`start_time`+s.`duration_time` >= sd.`beginn`)
                 OR s.`duration_time` = -1)
@@ -134,10 +134,10 @@ class CourseData extends \RESTAPI\RouteMap {
                 OR CONCAT_WS(' ', a.`Nachname`, a.`Vorname`) LIKE :searchterm)
             AND s.`visible` = 1
             AND s.`status` NOT IN (:excludetypes)";
-        $parameters = array(
+        $parameters = [
             'searchterm' => '%'.urldecode($searchterm).'%',
-            'excludetypes' => studygroup_sem_types() ?: array()
-        );
+            'excludetypes' => studygroup_sem_types() ?: []
+        ];
         if ($semester_id) {
             $from .= " JOIN `semester_data` sd ON (
                 (s.`duration_time` != -1 AND s.`start_time` + s.`duration_time` BETWEEN sd.`beginn` AND sd.`ende`)
@@ -162,24 +162,24 @@ class CourseData extends \RESTAPI\RouteMap {
         $query = $select.$from.$where.$order;
         $data = DBManager::get()->fetchAll($query, $parameters, 'Course::buildExisting');
 
-        $courses = array();
+        $courses = [];
         foreach ($data as $c) {
             $type = $c->getSemType();
-            $course = array(
+            $course = [
                 'id' => $c->id,
                 'number' => $c->veranstaltungsnummer,
                 'name' => ($c->name instanceof \I18NString) ? $c->name->original() : $c->name,
                 'subtitle' => ($c->untertitel instanceof \I18NString) ? $c->untertitel->original() : $c->untertitel,
                 'type' => $GLOBALS['SEM_TYPE'][$c->status]['name'],
-                'lecturers' => array()
-            );
+                'lecturers' => []
+            ];
             foreach (\SimpleORMapCollection::createFromArray($c->getMembersWithStatus('dozent'))->orderBy('position') as $l) {
-                $course['lecturers'][] = array(
+                $course['lecturers'][] = [
                     'id' => $l->id,
                     'firstname' => $l->vorname,
                     'lastname' => $l->nachname,
                     'username' => $l->username
-                );
+                ];
             }
             $courses[] = $course;
         }
@@ -193,27 +193,27 @@ class CourseData extends \RESTAPI\RouteMap {
      * @get /extern/course/:course_id
      */
     public function getCourse($course_id) {
-        $data = array();
+        $data = [];
         $c = \Course::find($course_id);
         if ($c->visible) {
             $type = $c->getSemType();
-            $data = array(
+            $data = [
                 'course_id' => $c->id,
                 'number' => $c->veranstaltungsnummer,
                 'name' => ($c->name instanceof \I18NString) ? $c->name->original() : $c->name,
                 'type' => $type['name'],
                 'semester' => $c->start_semester->name,
-                'home_institute' => array(
+                'home_institute' => [
                         'institute_id' => $c->home_institut->id,
                         'name' => ($c->home_institut->name instanceof \I18NString) ?
                             $c->home_institut->name->original() : $c->home_institut->name
-                    ),
-                'participating_institutes' => array()
-            );
+                    ],
+                'participating_institutes' => []
+            ];
             foreach ($c->institutes as $i) {
                 if ($i->id != $c->institut_id) {
-                    $data['participating_institutes'][] = array('institute_id' => $i->id,
-                        'name' => ($i->name instanceof \I18NString) ? $i->name->original() : $i->name);
+                    $data['participating_institutes'][] = ['institute_id' => $i->id,
+                        'name' => ($i->name instanceof \I18NString) ? $i->name->original() : $i->name];
                 }
             }
             usort($data['participating_institutes'], function ($a, $b) {
@@ -235,7 +235,7 @@ class CourseData extends \RESTAPI\RouteMap {
      */
     private function buildTreeLevel($parent_id, $depth, $selected, &$tree, $current_level=0)
     {
-        $level = array();
+        $level = [];
         $kids = $tree->getKids($parent_id);
         if (is_array($kids) && count($kids) > 0) {
             foreach ($kids as $kid) {
@@ -243,12 +243,12 @@ class CourseData extends \RESTAPI\RouteMap {
 
                 $kidskids = $tree->getKids($kid);
 
-                $current = array(
+                $current = [
                     'id' => $kid,
                     'name' => $data['name'],
                     'tree_id' => $kid,
                     'num_children' => is_array($kidskids) ? count($kidskids) : 0
-                );
+                ];
                 /*
                  * We need to build tree recursively until the given depth is
                  * reached or we have found the full path to the selected

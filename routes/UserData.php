@@ -49,10 +49,10 @@ class UserData extends \RESTAPI\Routes\User {
         $statement->bindValue(':username', $username);
         $statement->execute();
 
-        $institutes = array(
-            'work'  => array(),
-            'study' => array(),
-        );
+        $institutes = [
+            'work'  => [],
+            'study' => [],
+        ];
 
         foreach ($statement->fetchAll(\PDO::FETCH_ASSOC) as $row) {
             if ($row['perms'] === 'user') {
@@ -75,8 +75,8 @@ class UserData extends \RESTAPI\Routes\User {
      */
     public function searchUsers($searchterm)
     {
-        $users = array();
-        $visible = array('yes', 'always');
+        $users = [];
+        $visible = ['yes', 'always'];
         if (\Config::get()->USER_VISIBILITY_UNKNOWN) {
             $visible[] = 'unknown';
         }
@@ -92,7 +92,7 @@ class UserData extends \RESTAPI\Routes\User {
                 AND a.`visible` IN (:visible)
                 AND ui.`inst_perms` != 'user'
             ORDER BY a.`Nachname`, a.`Vorname`, a.`username`",
-            array('searchterm' => '%'.urldecode($searchterm).'%', 'visible' => $visible));
+            ['searchterm' => '%'.urldecode($searchterm).'%', 'visible' => $visible]);
         return $users;
     }
 
