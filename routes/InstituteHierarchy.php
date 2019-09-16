@@ -105,7 +105,7 @@ class InstituteHierarchy extends \RESTAPI\RouteMap {
         $root = [
             'id' => 'studip',
             'tree_id' => 'root',
-            'name' => Config::get()->UNI_NAME_CLEAN,
+            'name' => \Config::get()->UNI_NAME_CLEAN,
             'children' => self::buildRangeTreeLevel('root', $tree, $externtypes),
             'selectable' => $extern
         ];
