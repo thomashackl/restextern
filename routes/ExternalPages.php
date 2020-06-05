@@ -32,7 +32,17 @@ class ExternalPages extends \RESTAPI\RouteMap {
             $parameters[] = $institute_id;
         }
         $query .= "ORDER BY `config_type`";
-        return DBManager::get()->fetchFirst($query, $parameters);
+        $configs = DBManager::get()->fetchFirst($query, $parameters);
+
+        /*
+         * Add a pseudo page type if the Phonebook plugin is present.
+         * The type code is 555 as hommage to the pseudo American numbers in movies.
+         */
+        if (class_exists('Phonebook')) {
+            $configs[] = '555';
+        }
+
+        return $configs;
     }
 
     /**

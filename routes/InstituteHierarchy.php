@@ -22,7 +22,7 @@ class InstituteHierarchy extends \RESTAPI\RouteMap {
         $i = \Institute::find($institute_id);
         $data = [
             'institute_id' => $i->id,
-            'name' => ($i->name instanceof \I18NString) ? $i->name->original() : $i->name,
+            'name' => (string) $i->name,
         ];
         return $data;
     }
