@@ -70,6 +70,7 @@ class CourseData extends \RESTAPI\RouteMap {
 
         return array_map(function ($s) use ($semesters) {
             return [
+                'id' => $s->semester_id,
                 'semester_id' => $s->semester_id,
                 'name' => (string) $s->name,
                 'description' => (string) $s->description,

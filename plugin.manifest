@@ -1,5 +1,5 @@
 pluginname=REST Schnittstelle Externe Seiten
 pluginclassname=RestExternPlugin
 origin=intelec
-version=1.2.5
+version=1.2.6
 studipMinVersion=4.0
